@@ -26,8 +26,6 @@ exports.router = (...funcs) => (() => {
       const result = yield fn(req, res);
       if (result || res.headersSent) return result;
     }
-
-    return false;
   });
 
   return function (_x, _x2) {
