@@ -1,8 +1,7 @@
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 const UrlPattern = require('url-pattern');
-const { send } = require('micro');
-const { getParamsAndQuery } = require('../utils');
+const { getParamsAndQuery, patternOpts } = require('../utils');
 
 const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
 
@@ -10,7 +9,7 @@ const methodFn = method => (path, handler) => {
   if (!path) throw new Error('You need to set a valid path');
   if (!handler) throw new Error('You need to set a valid handler');
 
-  const route = new UrlPattern(path);
+  const route = new UrlPattern(path, patternOpts);
 
   return (req, res) => {
     const { params, query } = getParamsAndQuery(route, req.url);
@@ -28,7 +27,7 @@ exports.router = (...funcs) => (() => {
       if (result || res.headersSent) return result;
     }
 
-    send(res, 404, `Cannot ${req.method} ${req.url}`);
+    return false;
   });
 
   return function (_x, _x2) {
